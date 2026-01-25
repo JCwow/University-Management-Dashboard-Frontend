@@ -13,10 +13,12 @@ import { useNotificationProvider } from "./components/refine-ui/notification/use
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import { dataProvider } from "./providers/data";
 import Dashboard from "./pages/dashboard";
-import {Home, BookOpen} from "lucide-react"
+import {Home, BookOpen, GraduationCap} from "lucide-react"
 import { Layout } from "./components/refine-ui/layout/layout";
 import SubjectsList from "./pages/subjects/list";
 import SubjectCreate from "./pages/subjects/create";
+import ClassesList from "./pages/classes/list"
+import ClassesCreate from "./pages/classes/create";
 import.meta.env.VITE_BACKEND_BASE_URL
 function App() {
   return (
@@ -39,6 +41,9 @@ function App() {
                 },
                 {
                   name: 'subjects', list: '/subjects', create: '/subjects/create', meta: {label: 'Subjects', icon: <BookOpen/>}
+                },
+                {
+                  name: 'classes', list: '/classes', create: '/classes/create', meta: {label: 'Classes', icon: <GraduationCap/>}
                 }
               ]}
             >
@@ -50,7 +55,11 @@ function App() {
                   <Route path="subjects">
                     <Route index element={<SubjectsList/>}></Route>
                     <Route path="create" element={<SubjectCreate/>}></Route>
-                  
+                  </Route>
+
+                  <Route path="classes">
+                    <Route index element={<ClassesList/>}></Route>
+                    <Route path="create" element={<ClassesCreate/>}></Route>
                   </Route>
                 
                 </Route>
