@@ -47,29 +47,29 @@ type FormFieldProps<T extends keyof ClassFormValues> = {
 
 
 const ClassesCreate = () => {
-  const back = useBack();
+    const back = useBack();
 
-  const form = useForm<ClassFormValues>({
-    resolver: zodResolver(classSchema),
-    refineCoreProps: {
-      resource: "classes",
-      action: "create",
-    },
-    defaultValues: {
-      status: "active",
-    },
-  });
-  const teachers = [
-    { id: 1, name: "John Smith" },
-    { id: 2, name: "Sarah Johnson" },
-    { id: 3, name: "Michael Brown" }
-];
+    const form = useForm<ClassFormValues>({
+        resolver: zodResolver(classSchema),
+        refineCoreProps: {
+        resource: "classes",
+        action: "create",
+        },
+        defaultValues: {
+        status: "active",
+        },
+    });
+    const teachers = [
+        { id: 1, name: "John Smith" },
+        { id: 2, name: "Sarah Johnson" },
+        { id: 3, name: "Michael Brown" }
+    ];
 
-const subjects = [
-    { id: 1, name: "Mathematics", code: "MATH" },
-    { id: 2, name: "Computer Science", code: "CS" },
-    { id: 3, name: "Physics", code: "PHYS" }
-];
+    const subjects = [
+        { id: 1, name: "Mathematics", code: "MATH" },
+        { id: 2, name: "Computer Science", code: "CS" },
+        { id: 3, name: "Physics", code: "PHYS" }
+    ];
 
   const {
     refineCore: { onFinish },
@@ -80,6 +80,10 @@ const subjects = [
 
   const bannerPublicId = form.watch("bannerCldPubId");
 
+//   const setBannerImage = (field, file) => {
+//     if(file){field.onChange(file.url)}
+    
+//   }
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     try {
       await onFinish(values);

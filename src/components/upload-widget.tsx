@@ -1,66 +1,68 @@
 import { useEffect, useRef, useState } from "react";
-import { Upload, X } from "lucide-react";
+import { Upload, UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UploadWidgetProps } from "@/types";
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "@/constants";
+import { UploadWidgetProps, UploadWidgetValue } from "@/types";
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET, MAX_FILE_SIZE } from "@/constants";
 
-const UploadWidget = ({ value, onChange, disabled = false }: UploadWidgetProps) => {
+const UploadWidget = ({ value = null, onChange, disabled = false }: UploadWidgetProps) => {
   const [widget, setWidget] = useState<CloudinaryWidget | null>(null);
-  const widgetRef = useRef<HTMLDivElement>(null);
+  const widgetRef = useRef<CloudinaryWidget | null>(null);
+  const onChangeRef = useRef(onChange)
+  const [preview, setPreview] = useState<UploadWidgetValue | null>(value);
+  const [deleteToken, setDeleteToken] = useState<string | null>(null);
+  
+  
+  useEffect(() => {
+    setPreview(value)
+    if(!value) setDeleteToken(null);
+  }, [value]);
 
   useEffect(() => {
-    // Load Cloudinary script if not already loaded
-    if (!window.cloudinary && CLOUDINARY_CLOUD_NAME) {
-      const script = document.createElement("script");
-      script.src = `https://widget.cloudinary.com/v2.0/global/all.js`;
-      script.async = true;
-      document.body.appendChild(script);
+    onChangeRef.current = onChange;
+  }, [onChange])
 
-      script.onload = () => {
-        initializeWidget();
-      };
-    } else if (window.cloudinary && CLOUDINARY_CLOUD_NAME) {
-      initializeWidget();
-    }
-
-    return () => {
-      // Cleanup if needed
-    };
-  }, []);
-
-  const initializeWidget = () => {
-    if (!window.cloudinary || !CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      console.warn("Cloudinary configuration is missing");
-      return;
-    }
-
-    const uploadWidget = window.cloudinary.createUploadWidget(
-      {
+  useEffect(() => {
+    if(typeof window === 'undefined') return;
+    const initializeWidget =() => {
+      if(!window.cloudinary || widgetRef.current) return false;
+      widgetRef.current = window.cloudinary.createUploadWidget({
         cloudName: CLOUDINARY_CLOUD_NAME,
         uploadPreset: CLOUDINARY_UPLOAD_PRESET,
         multiple: false,
-        sources: ["local", "camera", "url"],
-        showAdvancedOptions: false,
-        cropping: false,
-        resourceType: "image",
-      },
-      (error, result) => {
-        if (error) {
-          console.error("Upload error:", error);
-          return;
-        }
-
-        if (result && result.event === "success") {
-          const uploadResult = {
+        folder: 'uploads',
+        maxFileSize: 5000000,
+        clientAllowedFormats: ['png', 'jpg','jpeg', 'webp'] 
+      }, (error, result) => {
+        if(!error && result.event === 'success'){
+          const payload: UploadWidgetValue = {
             url: result.info.secure_url,
-            publicId: result.info.public_id,
-          };
-          onChange?.(uploadResult);
-        }
-      }
-    );
+            publicId: result.info.public_id
+          }
+          setPreview(payload)
 
-    setWidget(uploadWidget);
+          setDeleteToken(result.info.delete_token ?? null);
+        
+          onChangeRef.current?.(payload)
+        }
+        
+      })
+      return true
+    }
+    if(initializeWidget()){
+      return;
+    }
+    const intervalId = window.setInterval(() => {
+      if(initializeWidget()){
+        window.clearInterval(intervalId);
+      }
+    }, 500)
+
+    return () => window.clearInterval(intervalId);
+  }, [])
+
+
+  const openWidget = () => {
+    if(!disabled) widgetRef.current?.open();
   };
 
   const handleUploadClick = () => {
@@ -94,26 +96,28 @@ const UploadWidget = ({ value, onChange, disabled = false }: UploadWidgetProps) 
   }
 
   return (
-    <div
-      ref={widgetRef}
-      className="upload-dropzone"
-      onClick={handleUploadClick}
-      role="button"
-      tabIndex={disabled ? -1 : 0}
-      onKeyDown={(e) => {
-        if ((e.key === "Enter" || e.key === " ") && !disabled) {
-          e.preventDefault();
-          handleUploadClick();
-        }
-      }}
-    >
-      <div className="upload-prompt">
-        <Upload className="icon" />
-        <div>
-          <div>Click to upload</div>
-          <div>PNG, JPG, WEBP up to 3MB</div>
+    <div className="space-y-2">
+      {preview ? (
+        <div className="upload-preview">
+          <img src={preview.url} alt="Uploaded file"></img>
         </div>
-      </div>
+      ): <div className="upload-dropzone" role="button" 
+      tabIndex={0} onClick={openWidget}
+      onKeyDown={(event) => {
+        if(event.key === 'Enter'){
+          event.preventDefault();
+          openWidget();
+        }
+      }}>
+        <div className="upload-prompt">
+          <UploadCloud className="icon">
+          </UploadCloud>
+          <div>
+            <p>Click to upload photo</p>
+            <p>PNG, JPG, up to 5MB</p>
+          </div>
+        </div>
+        </div>}
     </div>
   );
 };
