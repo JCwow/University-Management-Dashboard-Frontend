@@ -59,17 +59,6 @@ const ClassesCreate = () => {
         status: "active",
         },
     });
-    const teachers = [
-        { id: 1, name: "John Smith" },
-        { id: 2, name: "Sarah Johnson" },
-        { id: 3, name: "Michael Brown" }
-    ];
-
-    const subjects = [
-        { id: 1, name: "Mathematics", code: "MATH" },
-        { id: 2, name: "Computer Science", code: "CS" },
-        { id: 3, name: "Physics", code: "PHYS" }
-    ];
 
   const {
     refineCore: { onFinish },
@@ -115,10 +104,11 @@ const ClassesCreate = () => {
     },
   });
 
-  //const teachers = teachersQuery.data?.data || [];
+  
+  const teachers = teachersQuery.data?.data || [];
   const teachersLoading = teachersQuery.isLoading;
 
-  //const subjects = subjectsQuery.data?.data || [];
+  const subjects = subjectsQuery.data?.data || [];
   const subjectsLoading = subjectsQuery.isLoading;
 
   return (
