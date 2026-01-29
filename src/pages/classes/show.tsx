@@ -3,8 +3,8 @@ import {useShow} from '@refinedev/core';
 import { ClassDetails } from '@/types';
 import { ShowView, ShowViewHeader } from '@/components/refine-ui/views/show-view';
 import { Card } from '@/components/ui/card';
-import { Badge } from 'lucide-react';
-import { Separator } from '@radix-ui/react-dropdown-menu';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import {AdvancedImage} from '@cloudinary/react';
 import { bannerPhoto } from '@/lib/cloudinary';
@@ -43,7 +43,13 @@ return (
     <ShowView className="class-view class-show">
         <ShowViewHeader resource="classes" title="Class Details"></ShowViewHeader>
             <div className="banner">
-                {bannerUrl ? <AdvancedImage alt="Class Banner" cldImg={bannerPhoto(bannerCldPubId ?? '', name)}></AdvancedImage> : <div className="placeholder"></div>}
+                {bannerCldPubId ? (
+                    <AdvancedImage alt="Class Banner" cldImg={bannerPhoto(bannerCldPubId, name)}></AdvancedImage>
+                ) : bannerUrl ? (
+                    <img src={bannerUrl} alt="Class Banner" />
+                ) : (
+                    <div className="placeholder"></div>
+                )}
             </div>
             <Card className="details-card">
                 <div className="details-header">

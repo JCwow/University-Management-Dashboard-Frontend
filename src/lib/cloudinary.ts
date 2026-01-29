@@ -7,6 +7,15 @@ import { source } from "@cloudinary/url-gen/actions/overlay";
 import { TextStyle } from "@cloudinary/url-gen/qualifiers/textStyle"
 import { Position } from "@cloudinary/url-gen/qualifiers"
 import { compass } from "@cloudinary/url-gen/qualifiers/gravity"
+
+// Fail-fast guard: ensure CLOUDINARY_CLOUD_NAME is configured before initializing Cloudinary
+if (!CLOUDINARY_CLOUD_NAME || CLOUDINARY_CLOUD_NAME.trim() === "") {
+    throw new Error(
+        "CLOUDINARY_CLOUD_NAME is required but not configured. " +
+        "Please set the VITE_CLOUDINARY_CLOUD_NAME environment variable."
+    );
+}
+
 const cld = new Cloudinary({cloud: {cloudName: CLOUDINARY_CLOUD_NAME}})
 
 export const bannerPhoto = (imageCldPubId: string, name: string) => {
