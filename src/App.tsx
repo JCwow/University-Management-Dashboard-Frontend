@@ -19,6 +19,7 @@ import SubjectsList from "./pages/subjects/list";
 import SubjectCreate from "./pages/subjects/create";
 import ClassesList from "./pages/classes/list"
 import ClassesCreate from "./pages/classes/create";
+import ClassesShow from "./pages/classes/show"
 import.meta.env.VITE_BACKEND_BASE_URL
 function App() {
   return (
@@ -43,7 +44,7 @@ function App() {
                   name: 'subjects', list: '/subjects', create: '/subjects/create', meta: {label: 'Subjects', icon: <BookOpen/>}
                 },
                 {
-                  name: 'classes', list: '/classes', create: '/classes/create', meta: {label: 'Classes', icon: <GraduationCap/>}
+                  name: 'classes', list: '/classes', create: '/classes/create', show: '/classes/show/:id',meta: {label: 'Classes', icon: <GraduationCap/>}
                 }
               ]}
             >
@@ -60,6 +61,7 @@ function App() {
                   <Route path="classes">
                     <Route index element={<ClassesList/>}></Route>
                     <Route path="create" element={<ClassesCreate/>}></Route>
+                    <Route path="show/:id" element={<ClassesShow/>}></Route>
                   </Route>
                 
                 </Route>

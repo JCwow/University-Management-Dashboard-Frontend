@@ -1,5 +1,5 @@
 import { BACKEND_BASE_URL } from "@/constants"
-import { ListResponse } from "@/types";
+import { GetOneResponse, ListResponse } from "@/types";
 import { CreateResponse } from "@refinedev/core";
 import {createDataProvider, CreateDataProviderOptions} from "@refinedev/rest"
 
@@ -65,6 +65,14 @@ const options: CreateDataProviderOptions = {
     mapResponse: async(response) => {
       const json: CreateResponse = await response.json();
       return json.data ?? [];
+    }
+  },
+  getOne: {
+    getEndpoint: ({resource, id}) => `${resource}/${id}`,
+    mapResponse: async(response) => {
+      if(!response.ok) return null;
+      const json: GetOneResponse = await response.json();
+      return json.data ?? null;
     }
   }
 }
