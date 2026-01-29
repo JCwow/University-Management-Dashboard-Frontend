@@ -5,6 +5,11 @@ import {createDataProvider, CreateDataProviderOptions} from "@refinedev/rest"
 
 if(!BACKEND_BASE_URL) throw new Error('BACKEND_BASE_URL is not configured. Please set VITE_BACKEND_BASE_URL in your .env file.')
 
+type HttpError = {
+  message: string;
+  statusCode: number;
+};
+
 const buildHttpError = async(response: Response): Promise<HttpError> => {
   let message = 'Request failed.';
   try{
@@ -35,6 +40,11 @@ const options: CreateDataProviderOptions = {
         if(resource === 'subjects'){
           if(field === 'department') params.department = value;
           if(field === 'name' || field === 'code') params.search = value;
+        }
+        if(resource === 'classes'){
+          if(field === 'name') params.search = value;
+          if(field === 'subject') params.subject = value;
+          if(field === 'teacher') params.teacher = value;
         }
       })
       return params;
